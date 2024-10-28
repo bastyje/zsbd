@@ -1,0 +1,13 @@
+databaseChangeLog:
+  - changeSet:
+      id: 1
+      author: gorkas
+      changes:
+        - sql:
+            sql: |
+              CREATE TYPE patient.part_of_brain AS ENUM (
+                'cerebrum', 'frontal_lobe', 'parietal_lobe', 'temporal_lobe', 'occipital_lobe',
+                'cerebellum', 'brain_stem', 'midbrain', 'pons', 'medulla_oblongata', 'thalamus',
+                'hypothalamus', 'amygdala', 'hippocampus', 'basal_ganglia', 'corpus_callosum',
+                'meninges', 'cerebrospinal_fluid', 'blood_brain_barrier', 'neurons', 'glial_cells'
+              )

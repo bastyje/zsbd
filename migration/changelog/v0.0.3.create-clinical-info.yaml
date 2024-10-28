@@ -1,0 +1,582 @@
+databaseChangeLog:
+  - changeSet:
+      id: 1
+      author: gorkas
+      changes:
+        - createTable:
+            tableName: clinical_info
+            schemaName: patient
+            columns:
+              - column:
+                  name: id
+                  type: INT
+                  autoIncrement: true
+                  constraints:
+                    nullable: false
+                    primaryKey: true
+                    primaryKeyName: pk_clinical_info
+              - column:
+                  name: patient_id
+                  type: INT
+                  constraints:
+                    nullable: false
+                    foreignKeyName: fk_clinical_info_patient
+                    referencedColumnNames: id
+                    referencedTableName: patient
+                    referencedTableSchemaName: patient
+              - column:
+                  name: ms_diagnosis_date
+                  type: DATE
+                  constraints:
+                    nullable: false
+              - column:
+                  name: first_ms_treatment_date
+                  type: DATE
+                  constraints:
+                    nullable: false
+              - column:
+                  name: number_of_previous_treatments
+                  type: INT
+                  constraints:
+                    nullable: false
+              - column:
+                  name: edss_at_diagnosis
+                  type: DECIMAL
+                  constraints:
+                      nullable: false
+              - column:
+                  name: comments
+                  type: NVARCHAR
+              - column:
+                  name: reason_of_stopping_treatment
+                  type: NVARCHAR
+        - sql:
+            sql: ALTER TABLE patient.clinical_info ADD CONSTRAINT number_of_previous_treatments_is_positive CHECK (number_of_previous_treatments >= 0)
+        - sql:
+            sql: ALTER TABLE patient.clinical_info ADD CONSTRAINT edss_at_diagnosis_is_valid CHECK (edss_at_diagnosis >= 0 and edss_at_diagnosis <= 10 and edss_at_diagnosis % 0.5 = 0)
+  - changeSet:
+      id: 2
+      author: gorkas
+      changes:
+        - createTable:
+            tableName: dmt_type
+            schemaName: patient
+            columns:
+              - column:
+                  name: id
+                  type: INT
+                  autoIncrement: true
+                  constraints:
+                    nullable: false
+                    primaryKey: true
+                    primaryKeyName: pk_dmt_type
+              - column:
+                  name: name
+                  type: VARCHAR(64)
+                  constraints:
+                    nullable: false
+        - insert:
+            tableName: dmt_type
+            schemaName: patient
+            columns:
+              - column:
+                  name: name
+                  type: VARCHAR(64)
+                  value: Tecfidera
+        - insert:
+            tableName: dmt_type
+            schemaName: patient
+            columns:
+              - column:
+                  name: name
+                  type: VARCHAR(64)
+                  value: Cladribine
+        - insert:
+            tableName: dmt_type
+            schemaName: patient
+            columns:
+              - column:
+                  name: name
+                  type: VARCHAR(64)
+                  value: Ofatumumab
+        - insert:
+            tableName: dmt_type
+            schemaName: patient
+            columns:
+              - column:
+                  name: name
+                  type: VARCHAR(64)
+                  value: Natalizumab
+        - insert:
+            tableName: dmt_type
+            schemaName: patient
+            columns:
+              - column:
+                  name: name
+                  type: VARCHAR(64)
+                  value: Okrelizumab
+  - changeSet:
+      id: 3
+      author: gorkas
+      changes:
+        - createTable:
+            tableName: treatment_stop
+            schemaName: patient
+            columns:
+              - column:
+                  name: id
+                  type: INT
+                  autoIncrement: true
+                  constraints:
+                    nullable: false
+                    primaryKey: true
+                    primaryKeyName: pk_treatment_stop
+              - column:
+                  name: reason
+                  type: NVARCHAR
+                  constraints:
+                    nullable: false
+              - column:
+                  name: date
+                  type: DATE
+                  constraints:
+                      nullable: false
+        - createTable:
+            tableName: treatment_history
+            schemaName: patient
+            columns:
+              - column:
+                  name: id
+                  type: INT
+                  autoIncrement: true
+                  constraints:
+                    nullable: false
+                    primaryKey: true
+                    primaryKeyName: pk_treatment_history
+              - column:
+                  name: clinical_info_id
+                  type: INT
+                  constraints:
+                    nullable: false
+                    foreignKeyName: fk_treatment_history_clinical_info
+                    referencedColumnNames: id
+                    referencedTableName: clinical_info
+                    referencedTableSchemaName: patient
+              - column:
+                  name: dmt_type_id
+                  type: INT
+                  constraints:
+                    nullable: false
+                    foreignKeyName: fk_treatment_history_dmt_type
+                    referencedColumnNames: id
+                    referencedTableName: dmt_type
+                    referencedTableSchemaName: patient
+              - column:
+                  name: start_date
+                  type: DATE
+                  constraints:
+                    nullable: false
+              - column:
+                  name: edss_before_start
+                  type: DECIMAL
+                  constraints:
+                      nullable: false
+              - column:
+                  name: number_of_relapses_before_start
+                  type: INT
+                  constraints:
+                    nullable: false
+              - column:
+                  name: treatment_stop_id
+                  type: INT
+                  constraints:
+                    nullable: true
+                    foreignKeyName: fk_treatment_history_treatment_stop
+                    referencedColumnNames: id
+                    referencedTableName: treatment_stop
+                    referencedTableSchemaName: patient
+        - sql:
+            sql: ALTER TABLE patient.treatment_history ADD CONSTRAINT edss_before_start_is_valid CHECK (edss_before_start >= 0 and edss_before_start <= 10 and edss_before_start % 0.5 = 0)
+        - sql:
+            sql: ALTER TABLE patient.treatment_history ADD CONSTRAINT number_of_relapses_before_start_is_positive CHECK (number_of_relapses_before_start >= 0)
+        - createIndex:
+            tableName: treatment_history
+            schemaName: patient
+            indexName: idx_clinical_info_id
+            associatedWith: foreignKey
+            columns:
+              - column:
+                  name: clinical_info_id
+        - createIndex:
+            tableName: treatment_history
+            schemaName: patient
+            indexName: idx_dmt_type_id
+            associatedWith: foreignKey
+            columns:
+              - column:
+                  name: dmt_type_id
+  - changeSet:
+      id: 4
+      author: gorkas
+      changes:
+        - createTable:
+            tableName: study
+            schemaName: patient
+            columns:
+              - column:
+                  name: id
+                  type: INT
+                  autoIncrement: true
+                  constraints:
+                    nullable: false
+                    primaryKey: true
+                    primaryKeyName: pk_study
+              - column:
+                  name: treatment_history_id
+                  type: INT
+                  constraints:
+                    nullable: false
+                    foreignKeyName: fk_study_treatment_history
+                    referencedColumnNames: id
+                    referencedTableName: treatment_history
+                    referencedTableSchemaName: patient
+              - column:
+                  name: date
+                  type: DATE
+                  constraints:
+                    nullable: false
+              - column:
+                  name: year_of_treatment
+                  type: INT
+                  constraints:
+                      nullable: false
+              - column:
+                  name: edss
+                  type: DECIMAL
+                  constraints:
+                      nullable: false
+        - sql:
+            sql: ALTER TABLE patient.study ADD CONSTRAINT edss_is_valid CHECK (edss >= 0 and edss <= 10 and edss % 0.5 = 0)
+        - sql:
+            sql: ALTER TABLE patient.study ADD CONSTRAINT year_of_treatment_is_positive CHECK (year_of_treatment >= 0)
+        - createIndex:
+            tableName: study
+            schemaName: patient
+            indexName: idx_treatment_history_id
+            associatedWith: foreignKey
+            columns:
+              - column:
+                  name: treatment_history_id
+        - createIndex:
+            tableName: study
+            schemaName: patient
+            indexName: idx_year_of_treatment
+            columns:
+              - column:
+                  name: year_of_treatment
+  - changeSet:
+      id: 5
+      author: gorkas
+      changes:
+        - createTable:
+            tableName: relapse
+            schemaName: patient
+            columns:
+              - column:
+                  name: id
+                  type: INT
+                  autoIncrement: true
+                  constraints:
+                    nullable: false
+                    primaryKey: true
+                    primaryKeyName: pk_relapse
+              - column:
+                  name: study_id
+                  type: INT
+                  constraints:
+                      nullable: false
+                      foreignKeyName: fk_relapse_study
+                      referencedColumnNames: id
+                      referencedTableName: study
+                      referencedTableSchemaName: patient
+              - column:
+                  name: date
+                  type: DATE
+                  constraints:
+                      nullable: false
+  - changeSet:
+      id: 6
+      author: gorkas
+      changes:
+        - createTable:
+            tableName: vaccination_type
+            schemaName: patient
+            columns:
+              - column:
+                  name: id
+                  type: INT
+                  autoIncrement: true
+                  constraints:
+                    nullable: false
+                    primaryKey: true
+                    primaryKeyName: pk_vaccination_type
+              - column:
+                  name: name
+                  type: VARCHAR(64)
+                  constraints:
+                    nullable: false
+        - insert:
+            tableName: vaccination_type
+            schemaName: patient
+            columns:
+              - column:
+                  name: name
+                  type: VARCHAR(64)
+                  value: Influenza
+        - insert:
+            tableName: vaccination_type
+            schemaName: patient
+            columns:
+              - column:
+                  name: name
+                  type: VARCHAR(64)
+                  value: Hepatitis B
+        - insert:
+            tableName: vaccination_type
+            schemaName: patient
+            columns:
+              - column:
+                  name: name
+                  type: VARCHAR(64)
+                  value: Tetanus
+        - insert:
+            tableName: vaccination_type
+            schemaName: patient
+            columns:
+              - column:
+                  name: name
+                  type: VARCHAR(64)
+                  value: Diphtheria
+        - insert:
+            tableName: vaccination_type
+            schemaName: patient
+            columns:
+              - column:
+                  name: name
+                  type: VARCHAR(64)
+                  value: Pertussis
+        - insert:
+            tableName: vaccination_type
+            schemaName: patient
+            columns:
+              - column:
+                  name: name
+                  type: VARCHAR(64)
+                  value: Polio
+        - insert:
+            tableName: vaccination_type
+            schemaName: patient
+            columns:
+              - column:
+                  name: name
+                  type: VARCHAR(64)
+                  value: Meningococcal
+        - insert:
+            tableName: vaccination_type
+            schemaName: patient
+            columns:
+              - column:
+                  name: name
+                  type: VARCHAR(64)
+                  value: Pneumococcal
+        - insert:
+            tableName: vaccination_type
+            schemaName: patient
+            columns:
+              - column:
+                  name: name
+                  type: VARCHAR(64)
+                  value: Haemophilus influenzae
+        - insert:
+            tableName: vaccination_type
+            schemaName: patient
+            columns:
+              - column:
+                  name: name
+                  type: VARCHAR(64)
+                  value: Varicella
+        - insert:
+            tableName: vaccination_type
+            schemaName: patient
+            columns:
+              - column:
+                  name: name
+                  type: VARCHAR(64)
+                  value: Measles
+        - insert:
+            tableName: vaccination_type
+            schemaName: patient
+            columns:
+              - column:
+                  name: name
+                  type: VARCHAR(64)
+                  value: Mumps
+        - insert:
+            tableName: vaccination_type
+            schemaName: patient
+            columns:
+              - column:
+                  name: name
+                  type: VARCHAR(64)
+                  value: Covid-19
+  - changeSet:
+      id: 7
+      author: gorkas
+      changes:
+        - createTable:
+            tableName: vaccination
+            schemaName: patient
+            columns:
+              - column:
+                  name: id
+                  type: INT
+                  autoIncrement: true
+                  constraints:
+                    nullable: false
+                    primaryKey: true
+                    primaryKeyName: pk_vaccination
+              - column:
+                  name: clinical_info_id
+                  type: INT
+                  constraints:
+                    nullable: false
+                    foreignKeyName: fk_vaccination_clinical_info
+                    referencedColumnNames: id
+                    referencedTableName: clinical_info
+                    referencedTableSchemaName: patient
+              - column:
+                  name: date
+                  type: DATE
+                  constraints:
+                    nullable: false
+              - column:
+                  name: type
+                  type: INT
+                  constraints:
+                    nullable: false
+                    foreignKeyName: fk_vaccination_type
+                    referencedColumnNames: id
+                    referencedTableName: vaccination_type
+                    referencedTableSchemaName: patient
+  - changeSet:
+      id: 8
+      author: gorkas
+      changes:
+        - createTable:
+            tableName: disease
+            schemaName: patient
+            columns:
+              - column:
+                  name: id
+                  type: INT
+                  autoIncrement: true
+                  constraints:
+                    nullable: false
+                    primaryKey: true
+                    primaryKeyName: pk_disease
+              - column:
+                  name: name
+                  type: NVARCHAR
+                  constraints:
+                    nullable: false
+        - insert:
+            tableName: disease
+            schemaName: patient
+            columns:
+              - column:
+                  name: name
+                  type: NVARCHAR
+                  value: Neuromyelitis Optica
+        - insert:
+            tableName: disease
+            schemaName: patient
+            columns:
+              - column:
+                  name: name
+                  type: NVARCHAR
+                  value: Myasthenia Gravis
+        - insert:
+            tableName: disease
+            schemaName: patient
+            columns:
+              - column:
+                  name: name
+                  type: NVARCHAR
+                  value: Guillain-Barré Syndrome
+        - insert:
+            tableName: disease
+            schemaName: patient
+            columns:
+              - column:
+                  name: name
+                  type: NVARCHAR
+                  value: Chronic Inflammatory Demyelinating Polyneuropathy
+        - insert:
+            tableName: disease
+            schemaName: patient
+            columns:
+              - column:
+                  name: name
+                  type: NVARCHAR
+                  value: Acute Disseminated Encephalomyelitis
+        - insert:
+            tableName: disease
+            schemaName: patient
+            columns:
+              - column:
+                  name: name
+                  type: NVARCHAR
+                  value: Transverse Myelitis
+        - insert:
+            tableName: disease
+            schemaName: patient
+            columns:
+              - column:
+                  name: name
+                  type: NVARCHAR
+                  value: Optic Neuritis
+        - createTable:
+            tableName: concomitant_disease
+            schemaName: patient
+            columns:
+              - column:
+                  name: id
+                  type: INT
+                  autoIncrement: true
+                  constraints:
+                    nullable: false
+                    primaryKey: true
+                    primaryKeyName: pk_concomitant_disease
+              - column:
+                  name: clinical_info_id
+                  type: INT
+                  constraints:
+                    nullable: false
+                    foreignKeyName: fk_concomitant_disease_clinical_info
+                    referencedColumnNames: id
+                    referencedTableName: clinical_info
+                    referencedTableSchemaName: patient
+              - column:
+                  name: disease_id
+                  type: INT
+                  constraints:
+                      nullable: false
+                      foreignKeyName: fk_concomitant_disease_disease
+                      referencedColumnNames: id
+                      referencedTableName: disease
+                      referencedTableSchemaName: patient
+              - column:
+                  name: diagnosis_date
+                  type: DATE
+                  constraints:
+                    nullable: false

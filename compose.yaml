@@ -1,0 +1,30 @@
+services:
+
+  database:
+    image: postgres:latest
+    volumes:
+      - ./create-database.sh:/docker-entrypoint-initdb.d/a.sh
+    ports:
+      - "5432:5432"
+    environment:
+      POSTGRES_PASSWORD: $POSTGRES_PASSWORD
+    healthcheck:
+      test: ["CMD", "pg_isready", "-q", "-d", "postgres", "-U", "postgres"]
+      interval: 1s
+      timeout: 5s
+      retries: 10
+
+  migration:
+    build:
+      context: ./migration
+      dockerfile: Dockerfile
+    depends_on:
+      database:
+        condition: service_healthy
+    environment:
+      DB_HOSTNAME: database
+      DB_USER: migration
+      PGPASSWORD: $POSTGRES_PASSWORD
+      MIGRATION_PASSWORD: $MIGRATION_PASSWORD
+      ANALYST_PASSWORD: $ANALYST_PASSWORD
+      IMPORTER_PASSWORD: $IMPORTER_PASSWORD

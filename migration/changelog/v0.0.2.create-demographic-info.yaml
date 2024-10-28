@@ -1,0 +1,44 @@
+databaseChangeLog:
+  - changeSet:
+      id: 1
+      author: gorkas
+      changes:
+        - sql:
+            sql: CREATE TYPE patient.sex AS ENUM ('female', 'male', 'other')
+  - changeSet:
+      id: 2
+      author: gorkas
+      changes:
+        - createTable:
+            tableName: demographic_info
+            schemaName: patient
+            columns:
+              - column:
+                  name: id
+                  type: INT
+                  autoIncrement: true
+                  constraints:
+                    nullable: false
+                    primaryKey: true
+                    primaryKeyName: pk_demographic_info
+              - column:
+                  name: patient_id
+                  type: INT
+                  constraints:
+                    nullable: false
+                    foreignKeyName: fk_demographic_info_patient
+                    referencedColumnNames: id
+                    referencedTableName: patient
+                    referencedTableSchemaName: patient
+              - column:
+                  name: age
+                  type: INT
+                  constraints:
+                    nullable: false
+              - column:
+                  name: sex
+                  type: patient.sex
+                  constraints:
+                    nullable: false
+        - sql:
+            sql: ALTER TABLE patient.demographic_info ADD CONSTRAINT age_is_positive CHECK (age >= 0)

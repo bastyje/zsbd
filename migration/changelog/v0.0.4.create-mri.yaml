@@ -1,0 +1,44 @@
+databaseChangeLog:
+  - changeSet:
+      id: 1
+      author: gorkas
+      changes:
+        - createTable:
+            tableName: mri
+            schemaName: patient
+            columns:
+              - column:
+                  name: id
+                  type: INT
+                  autoIncrement: true
+                  constraints:
+                    nullable: false
+                    primaryKey: true
+                    primaryKeyName: pk_mri
+              - column:
+                  name: study_id
+                  type: INT
+                  constraints:
+                    nullable: false
+                    foreignKeyName: fk_mri_study
+                    referencedColumnNames: id
+                    referencedTableName: study
+                    referencedTableSchemaName: patient
+              - column:
+                  name: date
+                  type: DATE
+                  constraints:
+                    nullable: false
+              - column:
+                  name: file_address_uri
+                  type: VARCHAR(512)
+                  constraints:
+                    nullable: false
+        - createIndex:
+            indexName: idx_mri_study
+            tableName: mri
+            schemaName: patient
+            associatedWith: foreignKey
+            columns:
+              - column:
+                  name: study_id

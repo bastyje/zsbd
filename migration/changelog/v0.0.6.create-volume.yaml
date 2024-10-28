@@ -1,0 +1,53 @@
+databaseChangeLog:
+  - changeSet:
+      id: 1
+      author: gorkas
+      changes:
+        - createTable:
+            tableName: brain_volume
+            schemaName: patient
+            columns:
+              - column:
+                  name: id
+                  type: INT
+                  autoIncrement: true
+                  constraints:
+                      nullable: false
+                      primaryKey: true
+                      primaryKeyName: pk_brain_volume
+              - column:
+                  name: mri_id
+                  type: INT
+                  constraints:
+                      nullable: false
+                      foreignKeyName: fk_brain_volume_mri
+                      referencedColumnNames: id
+                      referencedTableName: mri
+                      referencedTableSchemaName: patient
+              - column:
+                  name: volume
+                  type: DOUBLE
+                  constraints:
+                      nullable: false
+              - column:
+                  name: part_of_brain
+                  type: patient.part_of_brain
+                  constraints:
+                      nullable: false
+        - sql:
+            sql: ALTER TABLE patient.brain_volume ADD CONSTRAINT volume_part_of_brain_positive CHECK (volume > 0);
+        - createIndex:
+            indexName: idx_brain_volume_mri
+            tableName: brain_volume
+            schemaName: patient
+            associatedWith: foreignKey
+            columns:
+              - column:
+                  name: mri_id
+        - createIndex:
+            indexName: idx_brain_volume_part_of_brain
+            tableName: brain_volume
+            schemaName: patient
+            columns:
+              - column:
+                  name: part_of_brain
