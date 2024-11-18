@@ -31,7 +31,7 @@ databaseChangeLog:
                       nullable: false
               - column:
                   name: part_of_brain
-                  type: patient.part_of_brain
+                  type: varchar(50)
                   constraints:
                       nullable: false
         - sql:
@@ -51,3 +51,25 @@ databaseChangeLog:
             columns:
               - column:
                   name: part_of_brain
+  - changeSet:
+      id: 2
+      author: gorkas
+      dbms: mssql
+      changes:
+        - sql:
+            sql: |
+              ALTER TABLE patient.brain_volume ADD CONSTRAINT part_of_brain_is_valid CHECK (part_of_brain IN (
+                'cerebrum', 'frontal_lobe', 'parietal_lobe', 'temporal_lobe', 'occipital_lobe',
+                'cerebellum', 'brain_stem', 'midbrain', 'pons', 'medulla_oblongata', 'thalamus',
+                'hypothalamus', 'amygdala', 'hippocampus', 'basal_ganglia', 'corpus_callosum',
+                'meninges', 'cerebrospinal_fluid', 'blood_brain_barrier', 'neurons', 'glial_cells'))
+  - changeSet:
+      id: 3
+      author: gorkas
+      dbms: postgresql
+      changes:
+        - modifyDataType:
+            tableName: brain_volume
+            schemaName: patient
+            columnName: part_of_brain
+            newDataType: patient.part_of_brain

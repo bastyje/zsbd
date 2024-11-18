@@ -1,0 +1,32 @@
+services:
+
+  database:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    ports:
+      - "1433:1433"
+    environment:
+      ACCEPT_EULA: Y
+      SA_PASSWORD: $SQLSERVER_PASSWORD
+    healthcheck:
+      test: ["CMD", "bash", "-c", "[ -e /tmp/db.initialized ]"]
+      interval: 5s
+      timeout: 5s
+      retries: 10
+
+  migration:
+    build:
+      context: ..
+      dockerfile: migration/Dockerfile.sqlserver
+    depends_on:
+      database:
+        condition: service_healthy
+    environment:
+      DB_URL: jdbc:sqlserver://database:1433;databaseName=ms;trustServerCertificate=true;encrypt=true;
+      DB_HOSTNAME: database
+      DB_USER: migration
+      DB_PASSWORD: $SQLSERVER_PASSWORD
+      MIGRATION_PASSWORD: $MIGRATION_PASSWORD
+      ANALYST_PASSWORD: $ANALYST_PASSWORD
+      IMPORTER_PASSWORD: $IMPORTER_PASSWORD

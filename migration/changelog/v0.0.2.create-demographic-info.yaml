@@ -2,6 +2,7 @@ databaseChangeLog:
   - changeSet:
       id: 1
       author: gorkas
+      dbms: postgresql
       changes:
         - sql:
             sql: CREATE TYPE patient.sex AS ENUM ('female', 'male', 'other')
@@ -37,8 +38,27 @@ databaseChangeLog:
                     nullable: false
               - column:
                   name: sex
-                  type: patient.sex
+                  type: varchar(50)
                   constraints:
                     nullable: false
         - sql:
             sql: ALTER TABLE patient.demographic_info ADD CONSTRAINT age_is_positive CHECK (age >= 0)
+  - changeSet:
+      id: 3
+      author: gorkas
+      dbms: mssql
+      changes:
+        - sql:
+            sql: |
+              ALTER TABLE patient.demographic_info ADD CONSTRAINT sex_is_valid CHECK (sex IN
+                ('male', 'female', 'other'))
+  - changeSet:
+      id: 4
+      author: gorkas
+      dbms: postgresql
+      changes:
+        - modifyDataType:
+            tableName: demographic_info
+            schemaName: patient
+            columnName: sex
+            newDataType: patient.sex

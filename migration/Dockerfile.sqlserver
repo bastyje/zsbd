@@ -1,0 +1,21 @@
+FROM liquibase/liquibase:latest
+
+ARG DB_HOSTNAME
+ARG MIGRATION_PASSWORD
+
+USER root
+
+RUN curl https://packages.microsoft.com/keys/microsoft.asc | tee /etc/apt/trusted.gpg.d/microsoft.asc
+RUN curl https://packages.microsoft.com/config/ubuntu/22.04/prod.list | tee /etc/apt/sources.list.d/mssql-release.list
+RUN apt update
+RUN ACCEPT_EULA=Y apt install mssql-tools18 unixodbc-dev -y
+
+COPY ./migration /liquibase/migration
+COPY ./sqlserver/sql /liquibase/migration/sql
+COPY ./sqlserver/init /liquibase/migration/init
+
+RUN chmod +x /liquibase/migration/migrate.sh
+RUN chmod +x -R /liquibase/migration/init
+USER liquibase
+
+ENTRYPOINT ["/liquibase/migration/migrate.sh"]

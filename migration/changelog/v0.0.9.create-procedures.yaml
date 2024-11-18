@@ -1,0 +1,41 @@
+databaseChangeLog:
+  - changeSet:
+      id: 1
+      author: gorkas
+      changes:
+        - createProcedure:
+            schemaName: patient
+            procedureName: add_brain_volume
+            path: /migration/sql/patient/proc__add_brain_volume.sql
+  - changeSet:
+      id: 2
+      author: gorkas
+      changes:
+        - createProcedure:
+            schemaName: patient
+            procedureName: add_mri
+            path: /migration/sql/patient/proc__add_mri.sql
+  - changeSet:
+      id: 3
+      author: gorkas
+      dbms: mssql
+      changes:
+        - sql:
+            sql: |
+              CREATE TYPE dbo.dates AS TABLE (value DATE)
+  - changeSet:
+      id: 4
+      author: gorkas
+      changes:
+        - createProcedure:
+            schemaName: patient
+            procedureName: add_new_study
+            path: /migration/sql/patient/proc__add_new_study.sql
+  - changeSet:
+      id: 5
+      author: gorkas
+      changes:
+        - createProcedure:
+            schemaName: patient
+            procedureName: start_new_patient
+            path: /migration/sql/patient/proc__start_new_patient.sql

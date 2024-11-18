@@ -274,6 +274,7 @@ databaseChangeLog:
             columns:
               - column:
                   name: year_of_treatment
+                  descending: true
   - changeSet:
       id: 5
       author: gorkas
@@ -486,7 +487,7 @@ databaseChangeLog:
                     primaryKeyName: pk_disease
               - column:
                   name: name
-                  type: NVARCHAR
+                  type: NVARCHAR(100)
                   constraints:
                     nullable: false
         - insert:
@@ -495,7 +496,7 @@ databaseChangeLog:
             columns:
               - column:
                   name: name
-                  type: NVARCHAR
+                  type: NVARCHAR(100)
                   value: Neuromyelitis Optica
         - insert:
             tableName: disease
@@ -503,7 +504,7 @@ databaseChangeLog:
             columns:
               - column:
                   name: name
-                  type: NVARCHAR
+                  type: NVARCHAR(100)
                   value: Myasthenia Gravis
         - insert:
             tableName: disease
@@ -511,7 +512,7 @@ databaseChangeLog:
             columns:
               - column:
                   name: name
-                  type: NVARCHAR
+                  type: NVARCHAR(100)
                   value: Guillain-Barré Syndrome
         - insert:
             tableName: disease
@@ -519,7 +520,7 @@ databaseChangeLog:
             columns:
               - column:
                   name: name
-                  type: NVARCHAR
+                  type: NVARCHAR(100)
                   value: Chronic Inflammatory Demyelinating Polyneuropathy
         - insert:
             tableName: disease
@@ -527,7 +528,7 @@ databaseChangeLog:
             columns:
               - column:
                   name: name
-                  type: NVARCHAR
+                  type: NVARCHAR(100)
                   value: Acute Disseminated Encephalomyelitis
         - insert:
             tableName: disease
@@ -535,7 +536,7 @@ databaseChangeLog:
             columns:
               - column:
                   name: name
-                  type: NVARCHAR
+                  type: NVARCHAR(100)
                   value: Transverse Myelitis
         - insert:
             tableName: disease
@@ -543,7 +544,7 @@ databaseChangeLog:
             columns:
               - column:
                   name: name
-                  type: NVARCHAR
+                  type: NVARCHAR(100)
                   value: Optic Neuritis
         - createTable:
             tableName: concomitant_disease

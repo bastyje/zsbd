@@ -50,9 +50,3 @@ CREATE VIEW patient.patient_volumes AS
         GROUP BY p.id, p.pseudonym, th.id, s.year_of_treatment, s.edss, m.id, dmt.name
     ) clinical ON bv.mri_id = clinical.mri_id
     GROUP BY clinical.patient_id, clinical.pseudonym, clinical.treatment_id, clinical.year_of_treatment, clinical.edss, clinical.relapses, clinical.dmt_type;
-
-
-DROP INDEX IF EXISTS idx_year_of_treatment;
-
-\timing
-SELECT * FROM patient.patient_volumes;

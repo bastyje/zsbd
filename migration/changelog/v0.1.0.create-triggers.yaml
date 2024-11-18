@@ -1,0 +1,24 @@
+databaseChangeLog:
+  - changeSet:
+      id: 1
+      author: gorkas
+      dbms: postgresql
+      changes:
+        - sqlFile:
+            schemaName: patient
+            procedureName: check_file_address_uri
+            path: /migration/sql/patient/trig__check_file_address_uri.sql
+  - changeSet:
+      id: 2
+      author: gorkas
+      dbms: postgresql
+      changes:
+        - sqlFile:
+            path: /migration/sql/patient/trig__check_no_overlapping_mri_dates.sql
+  - changeSet:
+      id: 3
+      author: gorkas
+      dbms: mssql
+      changes:
+        - sqlFile:
+            path: /migration/sql/patient/trig__instead_of_insert_mri.sql

@@ -16,12 +16,13 @@ services:
 
   migration:
     build:
-      context: ./migration
-      dockerfile: Dockerfile
+      context: ..
+      dockerfile: migration/Dockerfile.postgres
     depends_on:
       database:
         condition: service_healthy
     environment:
+      DB_URL: jdbc:postgresql://database:5432/ms
       DB_HOSTNAME: database
       DB_USER: migration
       PGPASSWORD: $POSTGRES_PASSWORD

@@ -2,7 +2,7 @@ DO
 $$
     DECLARE
         _pseudonym varchar(128);
-        _count integer := 3000;
+        _count integer := 500;
     BEGIN
         FOR i IN 1.._count LOOP
             _pseudonym := (

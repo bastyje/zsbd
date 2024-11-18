@@ -1,0 +1,25 @@
+databaseChangeLog:
+  - changeSet:
+      id: 1
+      author: gorkas
+      changes:
+        - sqlFile:
+            path: /migration/sql/patient/view__dmt_edss_increment.sql
+  - changeSet:
+      id: 2
+      author: gorkas
+      changes:
+        - sqlFile:
+            path: /migration/sql/patient/view__patient_volumes.sql
+  - changeSet:
+      id: 3
+      author: gorkas
+      changes:
+        - sqlFile:
+            path: /migration/sql/patient/view__brain_volume_changes.sql
+  - changeSet:
+      id: 4
+      author: gorkas
+      changes:
+        - sqlFile:
+            path: /migration/sql/patient/view__patient_atrophy.sql

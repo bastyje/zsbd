@@ -1,0 +1,46 @@
+services:
+
+  database:
+    extends:
+      service: database
+      file: ../postgres/compose.yaml
+
+  another_database:
+    image: postgres:latest
+    volumes:
+      - ../postgres/create-database.sh:/docker-entrypoint-initdb.d/a.sh
+    ports:
+      - "5433:5432"
+    environment:
+      POSTGRES_PASSWORD: $ANOTHER_POSTGRES_PASSWORD
+      DB_HOSTNAME: localhost
+      MIGRATION_PASSWORD: $MIGRATION_PASSWORD
+      ANALYST_PASSWORD: $ANALYST_PASSWORD
+      IMPORTER_PASSWORD: $IMPORTER_PASSWORD
+    healthcheck:
+      test: ["CMD", "pg_isready", "-q", "-d", "postgres", "-U", "postgres"]
+      interval: 1s
+      timeout: 5s
+      retries: 10
+
+  migration:
+    extends:
+      service: migration
+      file: ../postgres/compose.yaml
+
+  test:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    environment:
+      DB_HOSTNAME: database
+      MIGRATION_USER: migration
+      MIGRATION_PASSWORD: $MIGRATION_PASSWORD
+      ANALYST_USER: analyst
+      ANALYST_PASSWORD: $ANALYST_PASSWORD
+      IMPORTER_USER: importer
+      IMPORTER_PASSWORD: $IMPORTER_PASSWORD
+      POSTGRES_PASSWORD: $POSTGRES_PASSWORD
+    depends_on:
+      migration:
+        condition: service_completed_successfully

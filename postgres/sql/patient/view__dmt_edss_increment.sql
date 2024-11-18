@@ -18,8 +18,3 @@ CREATE VIEW patient.dmt_edss_increment AS
     ) last_study ON true
     JOIN patient.dmt_type dmt ON th.dmt_type_id = dmt.id
     GROUP BY dmt.name;
-
-
-SELECT * FROM patient.dmt_edss_increment;
-
-CREATE INDEX idx_year_of_treatment ON patient.study (year_of_treatment);
